@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>SOCS0100_Coursework1_in_Quato</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Coursework1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Coursework1_files/libs/quarto-html/quarto.js"></script>
+<script src="Coursework1_files/libs/quarto-html/popper.min.js"></script>
+<script src="Coursework1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Coursework1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Coursework1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Coursework1_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Coursework1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Coursework1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Coursework1_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="Coursework1_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="Coursework1_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">SOCS0100_Coursework1_in_Quato</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
+<h1>Introduction:</h1>
+<p>This dataset focuses on energy access across countries, organisations and income groups. It captures variables such as Entity names, Year and indicators like Number.of.people.with/without.access.to.electricity and Number_of_people_with/without_clean_fuels_for_cooking. It is important to understand how socio-economic and geographic differences can affect energy access and support policymakers, analysts and researchers to improve sustainable energy access worldwide.</p>
+<section id="import-packages-and-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="import-packages-and-dataset">Import Packages and dataset:</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"pacman"</span>)) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"pacman"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: pacman</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  tidyverse, <span class="co"># tidyverse pkgs including purrr</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  glue, <span class="co"># combining strings and objects</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  gapminder, <span class="co"># dataset</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  ggplot2, <span class="co"># plotting</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  gridExtra, <span class="co"># arranging plots</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  skimr, <span class="co"># Skim Inspection</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  VIM, <span class="co"># Imputation</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  kableExtra <span class="co"># Table</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>energy_access <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"Number of People with and without energy access.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="data-exploration" class="level1">
+<h1>Data Exploration</h1>
+<p>Energy access is a basic human need and a key variable for both economic and health development. The dataset was chosen to reveal inequalities in global energy access, which is a fundamental human rights issue. Therefore, by analysing this dataset, it helps us to understand how energy access correlates with factors like income inequality. Moreover, the outcome of this data analysis can potentially help people achieving more equitable access to energy resources, contributing to sustainable development and reducing socio-economic inequalities.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">1. Inspecting datatype:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">2. Inspecting missing values, means, and SD:</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_access) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6,582
+Columns: 6
+$ Entity                                         &lt;chr&gt; "Afghanistan", "Afghani…
+$ Year                                           &lt;int&gt; 2005, 2006, 2007, 2008,…
+$ Number.of.people.with.access.to.electricity    &lt;dbl&gt; 5719689, 7427679, 91875…
+$ Number.of.people.without.access.to.electricity &lt;dbl&gt; 19934584.6, 19005378.7,…
+$ number_with_clean_fuels_cooking                &lt;dbl&gt; 3460762, 3914736, 43333…
+$ number_without_clean_fuels_cooking             &lt;dbl&gt; 22193512, 22518322, 227…</code></pre>
+</div>
+</div>
+<p>By using the <strong>glimpse()</strong> function, we got a clear view of the dataset’s columns and their data types, and how each variable is represented. This helps in determining the kind of analysis and statistical operations that can be performed on the dataset. For example in this case, the column “Entity” represents country names, income groups and other large worldwide organisations, which are represented by “character” data type. Where “Year”is represented by “integer” datatype. And columns like “number.of.people.with/without.access.to.electricity” and “number_with/without_clean_fuels_cooking” are all represented by “double” data type, means it can have decimal points.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(energy_access) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">energy_access</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">6582</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">empty</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: right;">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Entity</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Year</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">2006.51</td>
+<td style="text-align: right;">7.96</td>
+<td style="text-align: right;">1990.0</td>
+<td style="text-align: right;">2000.00</td>
+<td style="text-align: right;">2007.00</td>
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">2019</td>
+<td style="text-align: left;">▃▆▇▇▇</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number.of.people.with.access.to.electricity</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">199266381.66</td>
+<td style="text-align: right;">679348377.02</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">623066.91</td>
+<td style="text-align: right;">5392424.50</td>
+<td style="text-align: right;">45415305</td>
+<td style="text-align: right;">6912458804</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number.of.people.without.access.to.electricity</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">50197598.02</td>
+<td style="text-align: right;">173187128.90</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">64778.72</td>
+<td style="text-align: right;">7782365</td>
+<td style="text-align: right;">1627944246</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">number_with_clean_fuels_cooking</td>
+<td style="text-align: right;">2661</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">158546598.14</td>
+<td style="text-align: right;">475491566.65</td>
+<td style="text-align: right;">2031.8</td>
+<td style="text-align: right;">491476.85</td>
+<td style="text-align: right;">5123887.46</td>
+<td style="text-align: right;">47660953</td>
+<td style="text-align: right;">4405739095</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">number_without_clean_fuels_cooking</td>
+<td style="text-align: right;">2661</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">153680861.62</td>
+<td style="text-align: right;">475064567.64</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">94237.27</td>
+<td style="text-align: right;">1856184.88</td>
+<td style="text-align: right;">19487483</td>
+<td style="text-align: right;">3093769825</td>
+<td style="text-align: left;">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>By using the <strong>skim()</strong> function, we first observed that there are 2661 missing values for both number_with/without_clean_fuels_cooking variables and 0 for the rest. Indicating there were item non-response in the data collection. Also, the function reveals the mean and standard deviation for numerical variables in order to understand the central tendency and variability within the dataset. The high standard deviations for all 4 energy access variables indicate there are significant disparities in energy access across countries, organisations and income groups.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="data-processing-and-functional-programming" class="level1">
+<h1>Data Processing and Functional Programming</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">1. Selecting relevant variables:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">2. Clean missing values:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">3. Create a boolean column:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">4. Check average for each country:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false" href="">Call functions to create refined datasets:</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>The first step was to select only the necessary columns for analysis to reduce data complexity. By creating the <strong>Selecting_variables()</strong> function, we wanted to focus on variables that are meaningful for understanding energy access. Therefore, we ignored the column <strong>number_without_clean_fuels_cooking</strong>, since we were more interested in electricity as a main source of energy. We then renamed them for simplicity in further analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Selecting_variables <span class="ot">=</span> <span class="cf">function</span>(data){</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  selected <span class="ot">=</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Entity, Year, Number.of.people.with.access.to.electricity,Number.of.people.without.access.to.electricity, number_with_clean_fuels_cooking) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">Country =</span> Entity, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">Number_with_electricity =</span> Number.of.people.with.access.to.electricity,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">Number_with_clean_fuels_cooking =</span> number_with_clean_fuels_cooking,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">Number_without_electricity =</span> Number.of.people.without.access.to.electricity)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(selected)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>Next, we cleaned the missing values and non-responses by first replacing 0 with NA (it is almost impossible for a country to have full or 0 access to energy). Then, as the sample size is large and the missingness can be affected by different econ-status and countries, it is likely to be Missing at random (MAR). Therefore, the <strong>Clean_missing_values()</strong> function then applies the Hotdeck imputation which replaces missing values using similar cases, maintaining the original data distribution as much as possible. This improves data quality while preserving the underlying relationships.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Clean_missing_values <span class="ot">=</span> <span class="cf">function</span>(data) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  data_na <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">ifelse</span>(. <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, .)))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  missing_value <span class="ot">=</span> <span class="fu">hotdeck</span>(data_na) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>( <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"_imp"</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(missing_value)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<p>After that, we created a new Boolean column by setting a <strong>More_access_energy</strong> function to indicate whether the number of people with electricity access exceeds those without. This column can quickly identify countries with better or worse energy access.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>More_access_energy <span class="ot">=</span> <span class="cf">function</span>(data) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  create_new_column <span class="ot">=</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">More_access =</span> <span class="fu">ifelse</span>(Number_with_electricity <span class="sc">&gt;</span> Number_without_electricity, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(create_new_column)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<p>Finally, we calculated the average energy access for each country, excluding aggregated regions like “Europe” or economic zones to just focus on individual countries. This step is crucial in terms of improving policy interventions for specific countries. And makes further visualisations more accessible since it also reduces repetitive entity names.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Country_average <span class="ot">=</span> <span class="cf">function</span>(data) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  energy_average <span class="ot">=</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Country) <span class="sc">%&gt;%</span> <span class="co"># group by entity name</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>( <span class="sc">!</span><span class="fu">str_detect</span>(Country,          <span class="fu">regex</span>(<span class="st">"Euro|Asia|pacific|IDA|IBRD|income|World|Early|Late|demographic|and|&amp;|area|countries|OECD"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>( <span class="at">average_electricity_access =</span> <span class="fu">mean</span>(Number_with_electricity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">2</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">average_no_electricity_access =</span> <span class="fu">mean</span>(Number_without_electricity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">2</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">average_access_to_clean_fuels =</span> <span class="fu">mean</span>(Number_with_clean_fuels_cooking, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(energy_average)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<p>By setting up multiple functions, we ensured that each operation is reproducible and easy to maintain, providing transparency throughout the data wrangling process. So the refined datasets were generated after calling back to those functions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>energy_selected <span class="ot">=</span> <span class="fu">Selecting_variables</span>(energy_access)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_selected)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6,582
+Columns: 5
+$ Country                         &lt;chr&gt; "Afghanistan", "Afghanistan", "Afghani…
+$ Year                            &lt;int&gt; 2005, 2006, 2007, 2008, 2009, 2010, 20…
+$ Number_with_electricity         &lt;dbl&gt; 5719689, 7427679, 9187518, 11754247, 1…
+$ Number_without_electricity      &lt;dbl&gt; 19934584.6, 19005378.7, 17913023.6, 15…
+$ Number_with_clean_fuels_cooking &lt;dbl&gt; 3460762, 3914736, 4333377, 4834766, 53…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>energy_NA <span class="ot">=</span> <span class="fu">Clean_missing_values</span>(energy_selected)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_NA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6,582
+Columns: 5
+$ Country                         &lt;chr&gt; "Afghanistan", "Afghanistan", "Afghani…
+$ Year                            &lt;int&gt; 2005, 2006, 2007, 2008, 2009, 2010, 20…
+$ Number_with_electricity         &lt;dbl&gt; 5719689, 7427679, 9187518, 11754247, 1…
+$ Number_without_electricity      &lt;dbl&gt; 19934584.6, 19005378.7, 17913023.6, 15…
+$ Number_with_clean_fuels_cooking &lt;dbl&gt; 3460761.6, 3914735.9, 4333376.7, 48347…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>energy_new_column <span class="ot">=</span> <span class="fu">More_access_energy</span>(energy_NA)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_new_column)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6,582
+Columns: 6
+$ Country                         &lt;chr&gt; "Afghanistan", "Afghanistan", "Afghani…
+$ Year                            &lt;int&gt; 2005, 2006, 2007, 2008, 2009, 2010, 20…
+$ Number_with_electricity         &lt;dbl&gt; 5719689, 7427679, 9187518, 11754247, 1…
+$ Number_without_electricity      &lt;dbl&gt; 19934584.6, 19005378.7, 17913023.6, 15…
+$ Number_with_clean_fuels_cooking &lt;dbl&gt; 3460761.6, 3914735.9, 4333376.7, 48347…
+$ More_access                     &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FAL…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>energy_cleaned <span class="ot">=</span> <span class="fu">Country_average</span>(energy_new_column)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_cleaned)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 194
+Columns: 4
+$ Country                       &lt;chr&gt; "Afghanistan", "Albania", "Algeria", "An…
+$ average_electricity_access    &lt;dbl&gt; 20976776.07, 2947902.22, 38357564.39, 86…
+$ average_no_electricity_access &lt;dbl&gt; 10537629.13, 126762704.96, 317532.11, 15…
+$ average_access_to_clean_fuels &lt;dbl&gt; 69102765.7, 6476325.8, 34445008.0, 25880…</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-visualisation-and-functional-programming" class="level1">
+<h1>Data Visualisation and Functional Programming:</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">1. Create a Table:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">2. Access to Electricity by Country:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">3. Trends Over Time:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false" href="">4. Relationship Between Clean Cooking Fuels and Electricity Access:</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false" href="">5. Energy access by income level:</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p>To identify the countries with the highest average electricity access, we created a table of the top 10 countries.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>top_10_energy <span class="ot">=</span> energy_cleaned <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(average_electricity_access)) <span class="sc">%&gt;%</span> <span class="co"># Decending order</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">%&gt;%</span> <span class="co"># Only select the first 10 rows</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply formatting for the table:</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Top 10 Countries by Electricity access"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="st">"striped"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_classic</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>top_10_energy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-striped lightable-classic table-sm small" data-quarto-postprocess="true">
+<caption>Top 10 Countries by Electricity access</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Country</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">average_electricity_access</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">average_no_electricity_access</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">average_access_to_clean_fuels</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1320832971</td>
+<td style="text-align: right;">23347623</td>
+<td style="text-align: right;">610109613</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">India</td>
+<td style="text-align: right;">825729809</td>
+<td style="text-align: right;">332702601</td>
+<td style="text-align: right;">279556747</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">North America</td>
+<td style="text-align: right;">325108463</td>
+<td style="text-align: right;">22066214</td>
+<td style="text-align: right;">207118301</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">United States</td>
+<td style="text-align: right;">292746153</td>
+<td style="text-align: right;">33714937</td>
+<td style="text-align: right;">228992988</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sub-Saharan Africa</td>
+<td style="text-align: right;">292194162</td>
+<td style="text-align: right;">535095204</td>
+<td style="text-align: right;">96557607</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Indonesia</td>
+<td style="text-align: right;">197061012</td>
+<td style="text-align: right;">30017971</td>
+<td style="text-align: right;">102789685</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Eritrea</td>
+<td style="text-align: right;">181437394</td>
+<td style="text-align: right;">75658863</td>
+<td style="text-align: right;">181592151</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Brazil</td>
+<td style="text-align: right;">176471748</td>
+<td style="text-align: right;">6532384</td>
+<td style="text-align: right;">247835688</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Russia</td>
+<td style="text-align: right;">145142564</td>
+<td style="text-align: right;">86516034</td>
+<td style="text-align: right;">284998765</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Japan</td>
+<td style="text-align: right;">126693778</td>
+<td style="text-align: right;">68130846</td>
+<td style="text-align: right;">270429873</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<section id="filtered-the-dataset-to-include-only-the-top-10-countries-from-the-table" class="level3">
+<h3 class="anchored" data-anchor-id="filtered-the-dataset-to-include-only-the-top-10-countries-from-the-table">Filtered the dataset to include only the top 10 countries from the table:</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>filtered_top_10_energy <span class="ot">=</span> energy_cleaned <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"China"</span>, <span class="st">"India"</span>, <span class="st">"North America"</span>, <span class="st">"United States"</span>, <span class="st">"Sub-Saharan Africa"</span>,<span class="st">"Indonesia"</span>, <span class="st">"Brazil"</span>, <span class="st">"Russia"</span>, <span class="st">"Japan"</span>, <span class="st">"Pakistan"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p>Next, we created bar charts to compare the top 10 countries by their average electricity access.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>bar_plot <span class="ot">=</span> <span class="cf">function</span>(data, variable) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> Country, <span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(variable))) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"orange"</span>) <span class="sc">+</span> <span class="co"># "stat =" suggests to use the actual y values provided by the dataset</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span> <span class="co"># Flip the axis</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">glue</span>(<span class="st">"{variable} (Average Number of People) by Country"</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"Country"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> variable</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    ) </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>bar_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"average_electricity_access"</span>, <span class="st">"average_no_electricity_access"</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>bar_plots_list <span class="ot">=</span> <span class="fu">map</span>(bar_variables, <span class="sc">~</span><span class="fu">bar_plot</span>(filtered_top_10_energy, .x))</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>bar_plots_grid <span class="ot">=</span> <span class="fu">grid.arrange</span>(<span class="at">grobs =</span> bar_plots_list, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Coursework1_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>bar_plots_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TableGrob (2 x 1) "arrange": 2 grobs
+  z     cells    name           grob
+1 1 (1-1,1-1) arrange gtable[layout]
+2 2 (2-2,1-1) arrange gtable[layout]</code></pre>
+</div>
+</div>
+<p>The <strong>bar_plot</strong> function provides a clear view of the leading countries in electricity access, showing that China and India have significantly higher electricity access compared to other countries. However, these figures are influenced by their large populations, which means that high absolute numbers do not necessarily reflect a high rate of access relative to their population size. Notably, China has a relatively low number of people without electricity access, while India still has a significant population without access. This suggest that other factors like a country’s economic status might also affect energy access.</p>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<p>Therefore, we specifically analysed trends over time, a line plot was created for the two countries with the highest energy access levels, China and India. And maped both graphs on the same grid to make the comparison between graphs easier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>filtered_energy <span class="ot">=</span> energy_selected <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"China"</span>, <span class="st">"India"</span>))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>line_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(data, y) {</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(y), <span class="at">color =</span> Country)) <span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">glue</span>(<span class="st">"Trend of {y} Over Time in China and India"</span>),</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">glue</span>(<span class="st">"{y}"</span>),</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">"Country"</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    ) </span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>line_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Number_with_electricity"</span>, <span class="st">"Number_without_electricity"</span>)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>line_plots_list <span class="ot">=</span> <span class="fu">map</span>(line_variables, <span class="sc">~</span><span class="fu">line_plot</span>(filtered_energy, .x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>line_plots_grid <span class="ot">=</span> <span class="fu">grid.arrange</span>(<span class="at">grobs =</span> line_plots_list, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Coursework1_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>line_plots_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TableGrob (1 x 2) "arrange": 2 grobs
+  z     cells    name           grob
+1 1 (1-1,1-1) arrange gtable[layout]
+2 2 (1-1,2-2) arrange gtable[layout]</code></pre>
+</div>
+</div>
+<p>The increasing trend of energy access and decreasing trend of “without energy” in the graphs plotted by the <strong>line_plot</strong> function shows that there were improvements made in providing electricity over time in both China and India. The trends reveal the effectiveness of policies in these countries, which can inform similar strategies elsewhere.</p>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<p>Furthermore, a scatter plot was generated in order to reveal any other variables in the dataset that might affect electricity access. In this case we chose to analyse the relationship between clean cooking fuel access and electricity access, to visualise any potential correlations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>scatter_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x, y) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">!!</span><span class="fu">sym</span>(x) , <span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(y))) <span class="sc">+</span> </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"green"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span> <span class="co"># Add trend line with confidence interval</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">glue</span>(<span class="st">"Relationship Between {x} and {y}"</span>),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">glue</span>(<span class="st">"{x}"</span>),</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">glue</span>(<span class="st">"{y}"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>x_variable <span class="ot">=</span> <span class="st">"average_electricity_access"</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>y_variable <span class="ot">=</span> <span class="st">"average_access_to_clean_fuels"</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>scatter_plot <span class="ot">=</span> <span class="fu">map</span>(y_variable, <span class="sc">~</span><span class="fu">scatter_plot</span>(energy_cleaned, x_variable, .x))</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>scatter_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="Coursework1_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The scatter plot shows a positive correlation between electricity access and clean cooking fuels, suggesting that improved electricity access often correlate with better clean cooking fuel availability. Those countries have high energy access often have rich source of clean cooking fuel availability as well.</p>
+</div>
+<div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
+<p>Finally, to test our hypothesis about economic status effecting energy access, we created a bar plot to visualise the average electricity access by income levels to understand how energy access varies across different economic groups.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>income_average <span class="ot">=</span> energy_new_column <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Country) <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>( <span class="fu">str_detect</span>(Country, <span class="fu">regex</span>(<span class="st">"income"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)), <span class="sc">!</span><span class="fu">str_detect</span>(Country, <span class="fu">regex</span>(<span class="st">"&amp;|-"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>( <span class="at">average_electricity_access =</span> <span class="fu">mean</span>(Number_with_electricity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>income_bar_plot <span class="ot">=</span> <span class="cf">function</span>(data, variable) {</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> Country, <span class="at">y =</span> <span class="sc">!!</span><span class="fu">sym</span>(variable))) <span class="sc">+</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"yellow"</span>) <span class="sc">+</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">glue</span>(<span class="st">"{variable} (Average Number of People) by Income Level"</span>),</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"Income Level"</span>,</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> variable</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    ) </span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="fu">income_bar_plot</span>(income_average, <span class="st">"average_electricity_access"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Coursework1_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The bar plot for income levels highlights disparities in energy access across different economic groups, it shows a general trend that income level is proportional to energy access; this shows the challenges faced by low-income countries in achieving sustainable energy access. Surprisingly, the high income group doesn’t consist the highest number of electricity access, possibly due to uneven distribution of infrastructure, regional variations, or different energy policies. This suggests that there might exist a large proportion of under-served populations in high income countries, underlining the need for more interventions beyond economic status.</p>
+<p>By using functional programming with <strong>map()</strong> for each visualisation, we ensured that they are consistent and reproducible for different variables, which is easier to maintain each plot and improves code efficiency and readability.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="critical-engagement-with-ai" class="level1">
+<h1>Critical Engagement with AI:</h1>
+<p>Throughout this project, I used ChatGPT as a collaborative tool to enhance my computational process, particularly in data wrangling and visualisation.</p>
+<p>One instance was when I struggled to filter out those aggregated regions and economic zones within my dataset. My initial approach involved multiple layers of filter() statements, which made the code lengthy and repetitive. ChatGPT suggested using the <strong>str_detect()</strong> function with regular expressions. This approach allowed me to only search for keywords and handle exclusions in a single line. it significantly reduced the complexity of my code while introducing me to advanced techniques I hadn’t previously considered.</p>
+<p>A part from that, ChatGPT also helped me to refine the presentation of the top 10 countries’ bar plots. My initial bar plots had country names on the x-axis, which were squeezed together and difficult to read. ChatGPT suggested the <strong>coord_flip()</strong> function in the ggplot package, which swapped the x and y axes and presented the bars horizontally. This largly improved the readability of the charts, as the country names were now neatly aligned along the y-axis, making the visualisation clearer and more user-friendly.</p>
+<p>However, there were refinement mistake made by ChatGPT. It suggested to use the function <strong>geom_histogram()</strong> instead of my correct approach (<strong>geom_bar</strong>) for the top 10 countries’ bar plots. But histogram is normally used for continuous variables. It would not serve the purpose of comparing discrete categories and their corresponding values; which in our case was the Categorical variable “Country”. This mistake highlighted the importance of maintaining human oversight and domain knowledge when implementing AI suggestions.</p>
+<p>From initial data wrangling to refining the final visualisations. Collaborating with ChatGPT encouraged me to think more strategically about optimising code, reproducibility and presentations while also improved my critical evaluation skills not only when challenging my own work but also challenging suggestions that ChatGPT provided. This interaction enriched my problem-solving abilities with coding and positioned me confidently on the right path of my further data analysis journey.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

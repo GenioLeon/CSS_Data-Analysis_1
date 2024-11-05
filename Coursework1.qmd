@@ -1,0 +1,279 @@
+---
+title: "SOCS0100_Coursework1_in_Quato"
+format: html
+editor: visual
+---
+
+# Introduction:
+
+This dataset focuses on energy access across countries, organisations and income groups. It captures variables such as Entity names, Year and indicators like Number.of.people.with/without.access.to.electricity and Number_of_people_with/without_clean_fuels_for_cooking. It is important to understand how socio-economic and geographic differences can affect energy access and support policymakers, analysts and researchers to improve sustainable energy access worldwide.
+
+## Import Packages and dataset:
+
+```{r}
+if (!require("pacman")) {
+  install.packages("pacman")
+}
+
+pacman::p_load(
+  tidyverse, # tidyverse pkgs including purrr
+  glue, # combining strings and objects
+  gapminder, # dataset
+  ggplot2, # plotting
+  gridExtra, # arranging plots
+  skimr, # Skim Inspection
+  VIM, # Imputation
+  kableExtra # Table
+) 
+options(scipen = 999)
+energy_access = read.csv("Number of People with and without energy access.csv")
+```
+
+# Data Exploration
+
+Energy access is a basic human need and a key variable for both economic and health development. The dataset was chosen to reveal inequalities in global energy access, which is a fundamental human rights issue. Therefore, by analysing this dataset, it helps us to understand how energy access correlates with factors like income inequality. Moreover, the outcome of this data analysis can potentially help people achieving more equitable access to energy resources, contributing to sustainable development and reducing socio-economic inequalities.
+
+::: panel-tabset
+## 1. Inspecting datatype:
+
+```{r}
+glimpse(energy_access) 
+```
+
+By using the **glimpse()** function, we got a clear view of the dataset's columns and their data types, and how each variable is represented. This helps in determining the kind of analysis and statistical operations that can be performed on the dataset. For example in this case, the column "Entity" represents country names, income groups and other large worldwide organisations, which are represented by "character" data type. Where "Year"is represented by "integer" datatype. And columns like "number.of.people.with/without.access.to.electricity" and "number_with/without_clean_fuels_cooking" are all represented by "double" data type, means it can have decimal points.
+
+## 2. Inspecting missing values, means, and SD:
+
+```{r}
+skim(energy_access) 
+```
+
+By using the **skim()** function, we first observed that there are 2661 missing values for both number_with/without_clean_fuels_cooking variables and 0 for the rest. Indicating there were item non-response in the data collection. Also, the function reveals the mean and standard deviation for numerical variables in order to understand the central tendency and variability within the dataset. The high standard deviations for all 4 energy access variables indicate there are significant disparities in energy access across countries, organisations and income groups.
+:::
+
+# Data Processing and Functional Programming
+
+::: panel-tabset
+## 1. Selecting relevant variables:
+
+The first step was to select only the necessary columns for analysis to reduce data complexity. By creating the **Selecting_variables()** function, we wanted to focus on variables that are meaningful for understanding energy access. Therefore, we ignored the column **number_without_clean_fuels_cooking**, since we were more interested in electricity as a main source of energy. We then renamed them for simplicity in further analysis.
+
+```{r}
+Selecting_variables = function(data){
+  selected = data %>%
+    select(Entity, Year, Number.of.people.with.access.to.electricity,Number.of.people.without.access.to.electricity, number_with_clean_fuels_cooking) %>%
+    rename(Country = Entity, 
+           Number_with_electricity = Number.of.people.with.access.to.electricity,
+           Number_with_clean_fuels_cooking = number_with_clean_fuels_cooking,
+           Number_without_electricity = Number.of.people.without.access.to.electricity)
+  return(selected)
+}
+```
+
+## 2. Clean missing values:
+
+Next, we cleaned the missing values and non-responses by first replacing 0 with NA (it is almost impossible for a country to have full or 0 access to energy). Then, as the sample size is large and the missingness can be affected by different econ-status and countries, it is likely to be Missing at random (MAR). Therefore, the **Clean_missing_values()** function then applies the Hotdeck imputation which replaces missing values using similar cases, maintaining the original data distribution as much as possible. This improves data quality while preserving the underlying relationships.
+
+```{r}
+Clean_missing_values = function(data) {
+  data_na <- data %>%
+    mutate(across(where(is.numeric), ~ ifelse(. == 0, NA, .)))
+  missing_value = hotdeck(data_na) %>%
+    select( -contains("_imp"))
+  return(missing_value)
+}
+```
+
+## 3. Create a boolean column:
+
+After that, we created a new Boolean column by setting a **More_access_energy** function to indicate whether the number of people with electricity access exceeds those without. This column can quickly identify countries with better or worse energy access.
+
+```{r}
+More_access_energy = function(data) {
+  create_new_column = data %>%
+    mutate(More_access = ifelse(Number_with_electricity > Number_without_electricity, TRUE, FALSE))
+  return(create_new_column)
+}
+```
+
+## 4. Check average for each country:
+
+Finally, we calculated the average energy access for each country, excluding aggregated regions like "Europe" or economic zones to just focus on individual countries. This step is crucial in terms of improving policy interventions for specific countries. And makes further visualisations more accessible since it also reduces repetitive entity names.
+
+```{r}
+Country_average = function(data) {
+  energy_average = data %>%
+    group_by(Country) %>% # group by entity name
+    filter( !str_detect(Country,          regex("Euro|Asia|pacific|IDA|IBRD|income|World|Early|Late|demographic|and|&|area|countries|OECD", ignore_case = TRUE))) %>%
+    summarise( average_electricity_access = mean(Number_with_electricity, na.rm = TRUE) %>% round(2),
+               average_no_electricity_access = mean(Number_without_electricity, na.rm = TRUE) %>% round(2),
+               average_access_to_clean_fuels = mean(Number_with_clean_fuels_cooking, na.rm = TRUE) %>% round(2)
+    )
+  return(energy_average)
+}
+```
+
+## Call functions to create refined datasets:
+
+By setting up multiple functions, we ensured that each operation is reproducible and easy to maintain, providing transparency throughout the data wrangling process. So the refined datasets were generated after calling back to those functions.
+
+```{r}
+energy_selected = Selecting_variables(energy_access)
+glimpse(energy_selected)
+```
+
+```{r}
+energy_NA = Clean_missing_values(energy_selected)
+glimpse(energy_NA)
+```
+
+```{r}
+energy_new_column = More_access_energy(energy_NA)
+glimpse(energy_new_column)
+```
+
+```{r}
+energy_cleaned = Country_average(energy_new_column)
+glimpse(energy_cleaned)
+```
+:::
+
+# Data Visualisation and Functional Programming:
+
+::: panel-tabset
+## 1. Create a Table:
+
+To identify the countries with the highest average electricity access, we created a table of the top 10 countries.
+
+```{r}
+top_10_energy = energy_cleaned %>%
+  arrange(desc(average_electricity_access)) %>% # Decending order
+  slice(0:10) %>% # Only select the first 10 rows
+    # Apply formatting for the table:
+  kable(caption = "Top 10 Countries by Electricity access") %>%
+  kable_styling("striped") %>%
+  kable_classic(full_width = FALSE)
+top_10_energy
+```
+
+### Filtered the dataset to include only the top 10 countries from the table:
+
+```{r}
+filtered_top_10_energy = energy_cleaned %>%
+  filter(Country %in% c("China", "India", "North America", "United States", "Sub-Saharan Africa","Indonesia", "Brazil", "Russia", "Japan", "Pakistan"))
+```
+
+## 2. Access to Electricity by Country:
+
+Next, we created bar charts to compare the top 10 countries by their average electricity access.
+
+```{r}
+bar_plot = function(data, variable) {
+  ggplot(data, aes(x = Country, y = !!sym(variable))) +
+    geom_bar(stat = "identity", fill = "orange") + # "stat =" suggests to use the actual y values provided by the dataset
+    coord_flip() + # Flip the axis
+    labs(
+      title = glue("{variable} (Average Number of People) by Country"),
+      x = "Country",
+      y = variable
+    ) 
+}
+bar_variables = c("average_electricity_access", "average_no_electricity_access")
+bar_plots_list = map(bar_variables, ~bar_plot(filtered_top_10_energy, .x))
+bar_plots_grid = grid.arrange(grobs = bar_plots_list, nrow = 2)
+bar_plots_grid
+```
+
+The **bar_plot** function provides a clear view of the leading countries in electricity access, showing that China and India have significantly higher electricity access compared to other countries. However, these figures are influenced by their large populations, which means that high absolute numbers do not necessarily reflect a high rate of access relative to their population size. Notably, China has a relatively low number of people without electricity access, while India still has a significant population without access. This suggest that other factors like a country's economic status might also affect energy access.
+
+## 3. Trends Over Time:
+
+Therefore, we specifically analysed trends over time, a line plot was created for the two countries with the highest energy access levels, China and India. And maped both graphs on the same grid to make the comparison between graphs easier.
+
+```{r}
+filtered_energy = energy_selected %>%
+  filter(Country %in% c("China", "India"))
+
+line_plot <- function(data, y) {
+  ggplot(data, aes(x = Year, y = !!sym(y), color = Country)) +
+    geom_line(size = 1) +
+    geom_point() +
+    labs(
+      title = glue("Trend of {y} Over Time in China and India"),
+      x = "Year",
+      y = glue("{y}"),
+      color = "Country"
+    ) 
+}
+
+line_variables = c("Number_with_electricity", "Number_without_electricity")
+line_plots_list = map(line_variables, ~line_plot(filtered_energy, .x))
+line_plots_grid = grid.arrange(grobs = line_plots_list, ncol = 2)
+line_plots_grid
+```
+
+The increasing trend of energy access and decreasing trend of "without energy" in the graphs plotted by the **line_plot** function shows that there were improvements made in providing electricity over time in both China and India. The trends reveal the effectiveness of policies in these countries, which can inform similar strategies elsewhere.
+
+## 4. Relationship Between Clean Cooking Fuels and Electricity Access:
+
+Furthermore, a scatter plot was generated in order to reveal any other variables in the dataset that might affect electricity access. In this case we chose to analyse the relationship between clean cooking fuel access and electricity access, to visualise any potential correlations.
+
+```{r}
+scatter_plot <- function(data, x, y) {
+  ggplot(data, aes(x = !!sym(x) , y = !!sym(y))) + 
+    geom_point() +
+    geom_smooth(method = "lm", color = "green", linetype = "dashed") + # Add trend line with confidence interval
+    labs(
+      title = glue("Relationship Between {x} and {y}"),
+      x = glue("{x}"),
+      y = glue("{y}")
+    )
+}
+
+x_variable = "average_electricity_access"
+y_variable = "average_access_to_clean_fuels"
+scatter_plot = map(y_variable, ~scatter_plot(energy_cleaned, x_variable, .x))
+scatter_plot
+```
+
+The scatter plot shows a positive correlation between electricity access and clean cooking fuels, suggesting that improved electricity access often correlate with better clean cooking fuel availability. Those countries have high energy access often have rich source of clean cooking fuel availability as well.
+
+## 5. Energy access by income level:
+
+Finally, to test our hypothesis about economic status effecting energy access, we created a bar plot to visualise the average electricity access by income levels to understand how energy access varies across different economic groups.
+
+```{r}
+income_average = energy_new_column %>%
+  group_by(Country) %>%
+  filter( str_detect(Country, regex("income", ignore_case = TRUE)), !str_detect(Country, regex("&|-", ignore_case = TRUE))) %>%
+  summarise( average_electricity_access = mean(Number_with_electricity, na.rm = TRUE) %>% round(2))
+
+income_bar_plot = function(data, variable) {
+  ggplot(data, aes(x = Country, y = !!sym(variable))) +
+    geom_bar(stat = "identity", fill = "yellow") +
+    labs(
+      title = glue("{variable} (Average Number of People) by Income Level"),
+      x = "Income Level",
+      y = variable
+    ) 
+}
+
+income_bar_plot(income_average, "average_electricity_access")
+```
+
+The bar plot for income levels highlights disparities in energy access across different economic groups, it shows a general trend that income level is proportional to energy access; this shows the challenges faced by low-income countries in achieving sustainable energy access. Surprisingly, the high income group doesn't consist the highest number of electricity access, possibly due to uneven distribution of infrastructure, regional variations, or different energy policies. This suggests that there might exist a large proportion of under-served populations in high income countries, underlining the need for more interventions beyond economic status.
+
+By using functional programming with **map()** for each visualisation, we ensured that they are consistent and reproducible for different variables, which is easier to maintain each plot and improves code efficiency and readability.
+:::
+
+# Critical Engagement with AI:
+
+Throughout this project, I used ChatGPT as a collaborative tool to enhance my computational process, particularly in data wrangling and visualisation.
+
+One instance was when I struggled to filter out those aggregated regions and economic zones within my dataset. My initial approach involved multiple layers of filter() statements, which made the code lengthy and repetitive. ChatGPT suggested using the **str_detect()** function with regular expressions. This approach allowed me to only search for keywords and handle exclusions in a single line. it significantly reduced the complexity of my code while introducing me to advanced techniques I hadn't previously considered.
+
+A part from that, ChatGPT also helped me to refine the presentation of the top 10 countries' bar plots. My initial bar plots had country names on the x-axis, which were squeezed together and difficult to read. ChatGPT suggested the **coord_flip()** function in the ggplot package, which swapped the x and y axes and presented the bars horizontally. This largly improved the readability of the charts, as the country names were now neatly aligned along the y-axis, making the visualisation clearer and more user-friendly.
+
+However, there were refinement mistake made by ChatGPT. It suggested to use the function **geom_histogram()** instead of my correct approach (**geom_bar**) for the top 10 countries' bar plots. But histogram is normally used for continuous variables. It would not serve the purpose of comparing discrete categories and their corresponding values; which in our case was the Categorical variable "Country". This mistake highlighted the importance of maintaining human oversight and domain knowledge when implementing AI suggestions.
+
+From initial data wrangling to refining the final visualisations. Collaborating with ChatGPT encouraged me to think more strategically about optimising code, reproducibility and presentations while also improved my critical evaluation skills not only when challenging my own work but also challenging suggestions that ChatGPT provided. This interaction enriched my problem-solving abilities with coding and positioned me confidently on the right path of my further data analysis journey.
