@@ -2,7 +2,7 @@
 ## Descriptions:
 This project aims to analyse global energy access, specifically focusing on disparities in access to electricity and clean cooking fuels across different countries, organisations, and income groups. The objective is to focus on inequalities in energy access, which is a critical issue affecting both economic growth and health outcomes. By using the [Number of People with and without energy access.csv](https://github.com/GenioLeon/CSS_Data-Analysis_1/blob/main/Number%20of%20People%20with%20and%20without%20energy%20access.csv) dataset, we aim to support policymakers, analysts and researchers to improve equitable and sustainable access to energy resources worldwide.
 
-## Features
+## Features:
 1. **Data Exploration:** Understanding the dataset through inspecting data structure, types, missing values, and statistical summaries.
 
 2. **Data Wrangling and Functional Programming:** Selecting key variables, cleaning missing values, and creating new columns and Calculating average values.
@@ -11,7 +11,7 @@ This project aims to analyse global energy access, specifically focusing on disp
 
 4. **Critical Engagement with AI:** Explaining the improvements and limitations when using AI for code refining in this project.
 
-## Dataset
+## Dataset:
 ### The dataset contains information on:
 - *Entity:* Including both individual countries and aggregated groups (e.g., income groups).
 
